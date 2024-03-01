@@ -8,5 +8,11 @@ namespace Hada
 {
     class Game
     {
+        private bool finPartida;
+
+        private void gameLoop()
+        {
+
+        }
     }
 }
