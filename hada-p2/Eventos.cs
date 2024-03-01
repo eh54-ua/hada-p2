@@ -8,28 +8,30 @@ namespace Hada
 {
     class Eventos
     {
-
-        public event EventHandler<TocadoArgs> eventoTocado;
         //public event EventHandler<HundidoArgs> eventoHundido;
 
         public class TocadoArgs : EventArgs
         {
-            public string nombre { get; set; }
-            public string etiqueta { get; set; }
-            public Coordenada coordenadaImpacto { get; set; }
+            public string Nombre { get; set; }
+            public string Etiqueta { get; set; }
+            public Coordenada CoordenadaImpacto { get; set; }
 
             public TocadoArgs(string nombre, string etiqueta, Coordenada coordenadaImpacto)
             {
-                this.nombre = nombre;
-                this.etiqueta = etiqueta;
-                this.coordenadaImpacto = coordenadaImpacto;
+                this.Nombre = nombre;
+                this.Etiqueta = etiqueta;
+                this.CoordenadaImpacto = coordenadaImpacto;
             }
         }
 
-        public void manejadorEventoTocado(object sender, TocadoArgs e)
+        public class HundidoArgs : EventArgs
         {
-            Console.WriteLine("Evento tocado");
-        }
+            public string Nombre { get; set; }
 
+            public HundidoArgs(string nombre)
+            {
+                this.Nombre = nombre;
+            }
+        }
     }
 }

@@ -8,12 +8,13 @@ namespace Hada
 {
     class Barco
     {
-
         public Dictionary<Coordenada, String> CoordenadasBarco { get; private set; } = new Dictionary<Coordenada, string>();
-        public Eventos evento { get; private set; }
 
         public string Nombre;
         public int NumDanyos;
+
+        public event EventHandler<Eventos.TocadoArgs> eventoTocado;
+        public event EventHandler<Eventos.HundidoArgs> eventoHundido;
 
         //Constructor de la clase barco
         public Barco(string nombre, int longitud, char orientacion, Coordenada coordenadaInicio)
@@ -23,13 +24,18 @@ namespace Hada
                 //Si la orientacion es horizontal, se aumenta en una unidad la fila.
                 if (orientacion == 'h')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i, coordenadaInicio.Columna);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila, coordenadaInicio.Columna + i);
                     CoordenadasBarco.Add(coord, nombre);
                 }//Si la horientacion es vertical se aumenta en una unidad la columna.
                 else if (orientacion == 'v')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila, coordenadaInicio.Columna + 1);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i, coordenadaInicio.Columna);
                     CoordenadasBarco.Add(coord, nombre);
+                }
+                else
+                {
+                    //Cambiar por una excepcion.
+                    Console.WriteLine("Orientacion invalida.");
                 }
             }
 
@@ -52,13 +58,17 @@ namespace Hada
                     CoordenadasBarco[c] += "_T";
                     //Aumento en 1 el número de daños.
                     this.NumDanyos++;
-                    //Evento tocado
+                    if(eventoTocado != null)
+                    {
+                        eventoTocado(this, new Eventos.TocadoArgs(this.Nombre, this.CoordenadasBarco[c], c));
+                    }
                 }
-            }
 
-            if (this.hundido())
-            {
-                //Evento hundido
+
+                if (this.hundido() && eventoHundido != null)
+                {
+                    eventoHundido(this, new Eventos.HundidoArgs(this.Nombre));
+                }
             }
         }
 

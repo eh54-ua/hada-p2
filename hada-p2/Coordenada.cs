@@ -20,14 +20,33 @@ namespace Hada
         // Constructor con dos números
         public Coordenada(int fila, int columna)
         {
+            //Cambiar para solucionar la excepcion de coordenadas negativas.
             this.Fila = fila;
             this.Columna = columna;
         }
         // Constructor con dos números en formato cadena
         public Coordenada(string fila, string columna)
         {
-            this.Fila = int.Parse(fila);
-            this.Columna = int.Parse(columna);
+            int numero;
+            if(int.TryParse(fila, out numero))
+            {
+                this.Fila = numero;
+            }
+            else
+            {
+                //TODO: A poder ser cambiar esto por una excepcion
+                Console.WriteLine("Argumento invalido de fila.");
+            }
+
+            if(int.TryParse(columna, out numero))
+            {
+                this.Columna = numero;
+            }
+            else
+            {
+                //TODO: A poder ser cambiar esto por una excepcion
+                Console.WriteLine("Argumento invalido de columna.");
+            }
         }
         // Constructor de copia
         public Coordenada(Coordenada c)
