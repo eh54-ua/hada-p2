@@ -45,6 +45,7 @@ namespace Hada
                 b.eventoTocado += cuandoEventoTocado;
                 b.eventoHundido += cuandoEventoHundido;
             }
+            eventoFinPartida += Game.cuandoEventoFinPartida;
 
             inicializarCasillasTablero();
         }
@@ -158,7 +159,7 @@ namespace Hada
 
             if (barcos.Count() == barcosEliminados.Count())
             {
-                //evento fin partida
+                Game.cuandoEventoFinPartida(this, EventArgs.Empty);
             }
         }
     }
