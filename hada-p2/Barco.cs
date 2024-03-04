@@ -8,34 +8,30 @@ namespace Hada
 {
     class Barco
     {
+
         public Dictionary<Coordenada, String> CoordenadasBarco { get; private set; } = new Dictionary<Coordenada, string>();
+        public event EventHandler<Eventos.TocadoArgs> eventoTocado;
+        public event EventHandler<Eventos.HundidoArgs> eventoHundido;
 
         public string Nombre;
         public int NumDanyos;
 
-        public event EventHandler<Eventos.TocadoArgs> eventoTocado;
-        public event EventHandler<Eventos.HundidoArgs> eventoHundido;
-
         //Constructor de la clase barco
         public Barco(string nombre, int longitud, char orientacion, Coordenada coordenadaInicio)
-        {
-            for (int i = 0; i < longitud; i++)
+        {   
+            for(int i = 0; i < longitud; i++)
             {
                 //Si la orientacion es horizontal, se aumenta en una unidad la fila.
                 if (orientacion == 'h')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila, coordenadaInicio.Columna + i);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i,coordenadaInicio.Columna);
                     CoordenadasBarco.Add(coord, nombre);
                 }//Si la horientacion es vertical se aumenta en una unidad la columna.
                 else if (orientacion == 'v')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i, coordenadaInicio.Columna);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila, coordenadaInicio.Columna + i);
+                    Console.WriteLine("Coordenadas añadidas al vector de coordenadas del barco: {0}",coord);
                     CoordenadasBarco.Add(coord, nombre);
-                }
-                else
-                {
-                    //Cambiar por una excepcion.
-                    Console.WriteLine("Orientacion invalida.");
                 }
             }
 
@@ -49,7 +45,7 @@ namespace Hada
             string valor;
 
             //Intento obtener el valor asociado a la cordenada c.
-            if (CoordenadasBarco.TryGetValue(c, out valor))
+            if(CoordenadasBarco.TryGetValue(c, out valor))
             {
                 //Compruebo que el nombre de la casilla no tenga ya el _T.
                 if (!valor.EndsWith("_T"))
@@ -58,17 +54,14 @@ namespace Hada
                     CoordenadasBarco[c] += "_T";
                     //Aumento en 1 el número de daños.
                     this.NumDanyos++;
-                    if(eventoTocado != null)
-                    {
-                        eventoTocado(this, new Eventos.TocadoArgs(this.Nombre, this.CoordenadasBarco[c], c));
-                    }
+                    //Evento tocado
+                    //Eventos.eventoTocado(this, new Eventos.TocadoArgs(b.Nombre, kvp.Value, "_T"));
                 }
+            }
 
-
-                if (this.hundido() && eventoHundido != null)
-                {
-                    eventoHundido(this, new Eventos.HundidoArgs(this.Nombre));
-                }
+            if(this.hundido())
+            {
+                //Evento hundido
             }
         }
 
