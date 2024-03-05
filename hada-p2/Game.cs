@@ -22,66 +22,60 @@ namespace Hada
             int tam = 0;
             List<Barco> listBarcos = new List<Barco>();
 
-            try
-            {
-                do
-                {
-                    Console.Write("Introduce el tamaño del tablero (entre 4 y 9): ");
-                    esNumero = int.TryParse(Console.ReadLine(), out tam);
-                    if(!esNumero)
-                    {
-                        Console.WriteLine("No se ha introducido un número.");
-                    }
-                }
-                while (!esNumero);
-            }
-            catch
-            {
-                Console.WriteLine("Tamaño del tablero no válido, saliendo del juego...");
-                System.Environment.Exit(0);
-            }
-
             // Barcos de ejemplo
             listBarcos.Add(new Barco("THOR", 1, 'h', new Coordenada(0, 0)));
             listBarcos.Add(new Barco("LOKI", 2, 'v', new Coordenada(1, 2)));
-            listBarcos.Add(new Barco("MAYA", 3, 'h', new Coordenada(2, 1)));
+            listBarcos.Add(new Barco("MAYA", 3, 'h', new Coordenada(3, 1)));
+
+            //Compruebo si el tamaño es correcto
+            do
+            {
+                Console.Write("Introduce el tamaño del tablero (entre 4 y 9): ");
+                esNumero = int.TryParse(Console.ReadLine(), out tam);
+                if(!esNumero)
+                {
+                    Console.WriteLine("No se ha introducido un número.");
+                }
+
+                if (tam < 4 || tam > 9)
+                {
+                    esNumero = false;
+                    Console.WriteLine("Tamaño de tablero incorrecto.");
+                }
+            }
+            while (!esNumero);
+
             Tablero tab = new Tablero(tam, listBarcos);
 
             bool coordenadaValida = false;
-            int posComa = 0;
             string cadena;
-            string coordenada1 = "";
-            string coordenada2 = "";
+            tab.eventoFinPartida += cuandoEventoFinPartida;
 
-            while(!finPartida)
+            while (!finPartida)
             {
-                // Verificar que se introduce una coordenada en formato válido
-                do
-                {
-                    Console.Write("Introduce la coordenada a la que disparar FILA,COLUMNA ('S' para salir): ");
-                    cadena = Console.ReadLine();
-                    coordenadaValida = verificarCoordenada(cadena);
-                }
-                while(!coordenadaValida);
+                 // Verificar que se introduce una coordenada en formato válido
+                 do
+                 {
+                     Console.Write("Introduce la coordenada a la que disparar FILA,COLUMNA ('S' para salir): ");
+                     cadena = Console.ReadLine();
+                     coordenadaValida = verificarCoordenada(cadena);
+                 }
+                 while(!coordenadaValida);
 
-                // Una vez se tiene una coordenada válida extraer los valores
-                for(int i = 0; i < cadena.Length; i++)
-                {
-                    if(cadena[i] == ',') posComa = i;
-                }
-                coordenada1 = cadena.Substring(0, posComa);
-                coordenada2 = cadena.Substring(posComa+1, cadena.Length - posComa);
+                 // Una vez se tiene una coordenada válida extraer los valores
+                 string[] partes = cadena.Split(',');
+                 Console.WriteLine("Coordenada: Fila {0}; Columna {1}",partes[0], partes[1]);
 
-                // Disparar y mostrar el estado del juego
-                tab.Disparar(new Coordenada(coordenada1, coordenada2));
+                 // Disparar y mostrar el estado del juego
+                 tab.Disparar(new Coordenada(partes[0], partes[1]));
                 Console.Write(tab.ToString());
             }
         }
 
-        private void cuandoEventoFinPartida(object sender, EventArgs e)
+        private void cuandoEventoFinPartida(object sender, Eventos.FinalPartidaArgs e)
         {
             Console.WriteLine("La partida se ha acabado.");
-            System.Environment.Exit(0);
+            finPartida = e.fin;
         }
 
         private bool verificarCoordenada(string cadena)
@@ -92,26 +86,17 @@ namespace Hada
                 System.Environment.Exit(0);
             }
 
-            int comas = 0;
             bool coordenadaValida = true;
 
-            for (int i = 0; i < cadena.Length && coordenadaValida; i++)
+            // Si no es un número o una coma no es válido
+            if ((cadena[0] < '0' || cadena[0] > '9') || (cadena[2] < '0' || cadena[2] > '9'))
             {
-                // Si no es un número o una coma no es válido
-                if (cadena[i] < '0' || cadena[i] > '9' && cadena[i] != ',')
-                {
-                    coordenadaValida = false;
-                }
+                coordenadaValida = false;
+            }
 
-                if (cadena[i] == ',')
-                {
-                    comas++;
-                }
-
-                if (comas > 1)
-                {
-                    coordenadaValida = false;
-                }
+            if (cadena[1] != ',')
+            {
+                coordenadaValida = false;
             }
 
             if (!coordenadaValida)
@@ -121,6 +106,5 @@ namespace Hada
 
             return coordenadaValida;
         }
-
     }
 }

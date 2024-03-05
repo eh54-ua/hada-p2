@@ -9,63 +9,46 @@ namespace Hada
     class Tablero
     {
 
-        public EventHandler<EventArgs> eventoFinPartida;
-        private int _TamTablero;
-        public int TamTablero { 
-            get
-            {
-                return _TamTablero;
-            }
-            set
-            {
-                if(value < 4 || value > 9)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), "El rango válido es entre 4 y 9.");
-                }
-                else
-                {
-                    _TamTablero = value;
-                }
-            } 
-        }
-
-        private List<Coordenada> coordenadasDisparadas;
-        private List<Coordenada> coordenadasTocadas;
-        private List<Barco> barcos;
-        private List<Barco> barcosEliminados;
-        private Dictionary<Coordenada, string> casillasTablero;
+        public EventHandler<Eventos.FinalPartidaArgs> eventoFinPartida;
+        private int TamTablero { get; set; }
+        
+        private List<Coordenada> coordenadasDisparadas = new List<Coordenada>();
+        private List<Coordenada> coordenadasTocadas = new List<Coordenada>();
+        private List<Barco> barcos = new List<Barco>();
+        private List<Barco> barcosEliminados = new List<Barco>();
+        private Dictionary<Coordenada, string> casillasTablero = new Dictionary<Coordenada, string>();
 
         public Tablero(int tamTablero, List<Barco> barcos)
         {
-            this._TamTablero = tamTablero;
+            this.TamTablero = tamTablero;
             this.barcos = barcos;
 
             foreach (Barco b in barcos)
             {
                 b.eventoTocado += cuandoEventoTocado;
-                //b.eventoHundido += cuandoEventoHundido;
+                b.eventoHundido += cuandoEventoHundido;
             }
-
-            //eventoFinPartida += Game.cuandoEventoFinPartida;
+            
             inicializarCasillasTablero();
         }
 
         private void inicializarCasillasTablero()
         {
+            //Añado todas las casillas dependiendo el tamaño del tablero.
             for (int i = 0; i < TamTablero; i++)
             {
                 for (int j = 0; j < TamTablero; j++)
                 {
-                    Coordenada coord = new Coordenada(i,j);
-                    casillasTablero.Add(coord, "AGUA");
+                    casillasTablero.Add(new Coordenada(i,j), "AGUA");
                 }
             }
 
+            //Encuentro las casillas donde hay barco y le cambio el value por el nombre del barco.
             foreach (Barco barco in barcos)
             {
-                foreach (KeyValuePair<Coordenada, string> kvp in barco.CoordenadasBarco)
+                foreach (Coordenada coord in barco.CoordenadasBarco.Keys)
                 {
-                    
+                    casillasTablero[coord] = barco.Nombre;
                 }
             }
 
@@ -74,16 +57,20 @@ namespace Hada
         public void Disparar(Coordenada c){
             if(c.Fila < 0 || c.Fila > TamTablero-1 || c.Columna < 0 || c.Columna > TamTablero-1)
             {
-                Console.WriteLine("La coordenada ({1}, {2}) está fuera de las dimensiones del tablero", c.Fila, c.Columna);
+                Console.WriteLine("La coordenada ({0}, {1}) está fuera de las dimensiones del tablero", c.Fila, c.Columna);
             }
             else
             {
                 coordenadasDisparadas.Add(c);
+                //Recorro la lista de barcos, creo una lista auxiliar para almacenar las coordenadas de los barcos.
                 foreach(Barco b in barcos)
                 {
-                    foreach(KeyValuePair<Coordenada, string> kvp in b.CoordenadasBarco)
+                    List<Coordenada> claves = new List<Coordenada>(b.CoordenadasBarco.Keys);
+                    //Recorro estas coordenadas y las comparo con la coordenada de disparo. Tengo que crear la lista aux porque si no da error.
+                    //No se puede modificar CoordenadasBarco mientras la clase barco se esta ejecutando.
+                    foreach(Coordenada coord in claves)
                     {
-                        if(kvp.Key.Fila == c.Fila && kvp.Key.Columna == c.Columna)
+                        if(coord.Fila == c.Fila && coord.Columna == c.Columna)
                         {
                             b.Disparo(c);
                         }
@@ -97,13 +84,17 @@ namespace Hada
             string tablero = "";
             int mostrados = 0;
 
-            foreach(KeyValuePair<Coordenada, string> kvp in casillasTablero)
+            for(int i = 0; i < TamTablero; i++)
             {
-                tablero += "[" + kvp.Value + "]";
-                mostrados++;
-                if(mostrados % TamTablero == 0)
+                for (int j = 0; j < TamTablero; j++)
                 {
-                    tablero += "\n";
+                    Coordenada coord = new Coordenada(i,j);
+                    tablero += "[" + casillasTablero[coord] + "]";
+                    mostrados++;
+                    if (mostrados % TamTablero == 0)
+                    {
+                        tablero += "\n";
+                    }
                 }
             }
 
@@ -150,17 +141,18 @@ namespace Hada
                     coordenadasTocadas.Add(b.Key);
                 }
             }
-            Console.WriteLine("TABLERO: Barco {1} tocado en Coordenada: [{2}, {3}]", args.nombre, args.coordenadaImpacto.Fila, args.coordenadaImpacto.Columna);
+            Console.WriteLine("TABLERO: Barco {0} tocado en Coordenada: [{1}, {2}]", args.nombre, args.coordenadaImpacto.Fila, args.coordenadaImpacto.Columna);
         }
 
-        /*private void cuandoEventoHundido(object sender, Eventos.HundidoArgs args)
+        private void cuandoEventoHundido(object sender, Eventos.HundidoArgs args)
         {
-            Console.WriteLine("Tablero: Barco {1} hundido!!", args.nombre);
+            Console.WriteLine("Tablero: Barco {0} hundido!!", args.nombre);
+            barcosEliminados.Add(barcos.Find(barco => barco.Nombre == args.nombre));
 
             if (barcos.Count() == barcosEliminados.Count())
             {
-                Game.cuandoEventoFinPartida(this, EventArgs.Empty);//Aun no esta creado, no se donde crearlo
+                eventoFinPartida(this, new Eventos.FinalPartidaArgs(true));
             }
-        }*/
+        }
     }
 }

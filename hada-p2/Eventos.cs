@@ -31,5 +31,14 @@ namespace Hada
                 this.nombre = nombre;
             }
         }
+
+        public class FinalPartidaArgs : EventArgs
+        {
+            public bool fin;
+            public FinalPartidaArgs(bool fin)
+            {
+                this.fin = fin;
+            }
+        }
     }
 }

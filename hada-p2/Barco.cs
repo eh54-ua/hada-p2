@@ -24,13 +24,12 @@ namespace Hada
                 //Si la orientacion es horizontal, se aumenta en una unidad la fila.
                 if (orientacion == 'h')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i,coordenadaInicio.Columna);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila,coordenadaInicio.Columna + i);
                     CoordenadasBarco.Add(coord, nombre);
                 }//Si la horientacion es vertical se aumenta en una unidad la columna.
                 else if (orientacion == 'v')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila, coordenadaInicio.Columna + i);
-                    Console.WriteLine("Coordenadas añadidas al vector de coordenadas del barco: {0}",coord);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i, coordenadaInicio.Columna);
                     CoordenadasBarco.Add(coord, nombre);
                 }
             }
@@ -55,13 +54,16 @@ namespace Hada
                     //Aumento en 1 el número de daños.
                     this.NumDanyos++;
                     //Evento tocado
-                    //Eventos.eventoTocado(this, new Eventos.TocadoArgs(b.Nombre, kvp.Value, "_T"));
+                    if (eventoTocado != null)
+                    {
+                        eventoTocado(this, new Eventos.TocadoArgs(this.Nombre, this.CoordenadasBarco[c], c));
+                    }
                 }
             }
 
-            if(this.hundido())
+            if(this.hundido() && eventoHundido != null)
             {
-                //Evento hundido
+                eventoHundido(this, new Eventos.HundidoArgs(this.Nombre));
             }
         }
 
