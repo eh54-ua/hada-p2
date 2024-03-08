@@ -147,7 +147,7 @@ namespace Hada
 
         private void cuandoEventoHundido(object sender, Eventos.HundidoArgs args)
         {
-            Console.WriteLine("Tablero: Barco {0} hundido!!", args.nombre);
+            Console.WriteLine("TABLERO: Barco {0} hundido!!", args.nombre);
             barcosEliminados.Add(barcos.Find(barco => barco.Nombre == args.nombre));
 
             if (barcos.Count() == barcosEliminados.Count())

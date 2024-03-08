@@ -44,10 +44,10 @@ namespace Hada
             string valor;
 
             //Intento obtener el valor asociado a la cordenada c.
-            if(CoordenadasBarco.TryGetValue(c, out valor))
+            if (CoordenadasBarco.TryGetValue(c, out valor))
             {
                 //Compruebo que el nombre de la casilla no tenga ya el _T.
-                if (!valor.EndsWith("_T"))
+                if (valor.EndsWith("_T") == false)
                 {
                     //Si no lo tiene añado el _T.
                     CoordenadasBarco[c] += "_T";
@@ -58,12 +58,17 @@ namespace Hada
                     {
                         eventoTocado(this, new Eventos.TocadoArgs(this.Nombre, this.CoordenadasBarco[c], c));
                     }
-                }
-            }
 
-            if(this.hundido() && eventoHundido != null)
-            {
-                eventoHundido(this, new Eventos.HundidoArgs(this.Nombre));
+                    if (this.hundido() && eventoHundido != null)
+                    {
+                        eventoHundido(this, new Eventos.HundidoArgs(this.Nombre));
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("Coordenada para disparo repetida.");
+                }
             }
         }
 

@@ -36,11 +36,13 @@ namespace Hada
                 {
                     Console.WriteLine("No se ha introducido un número.");
                 }
-
-                if (tam < 4 || tam > 9)
+                else
                 {
-                    esNumero = false;
-                    Console.WriteLine("Tamaño de tablero incorrecto.");
+                    if (tam < 4 || tam > 9)
+                    {
+                        esNumero = false;
+                        Console.WriteLine("Tamaño de tablero incorrecto.");
+                    }
                 }
             }
             while (!esNumero);
@@ -51,12 +53,14 @@ namespace Hada
             string cadena;
             tab.eventoFinPartida += cuandoEventoFinPartida;
 
+            Console.WriteLine(tab.ToString());
+
             while (!finPartida)
             {
                  // Verificar que se introduce una coordenada en formato válido
                  do
                  {
-                     Console.Write("Introduce la coordenada a la que disparar FILA,COLUMNA ('S' para salir): ");
+                     Console.Write("Introduce la coordenada a la que disparar FILA,COLUMNA ('S' para salir): \n");
                      cadena = Console.ReadLine();
                      coordenadaValida = verificarCoordenada(cadena);
                  }
@@ -64,37 +68,44 @@ namespace Hada
 
                  // Una vez se tiene una coordenada válida extraer los valores
                  string[] partes = cadena.Split(',');
-                 Console.WriteLine("Coordenada: Fila {0}; Columna {1}",partes[0], partes[1]);
 
                  // Disparar y mostrar el estado del juego
                  tab.Disparar(new Coordenada(partes[0], partes[1]));
                 Console.Write(tab.ToString());
+
+                if (finPartida)
+                {
+                    Console.WriteLine("..................................................................\nTODOS LOS BARCOS SE HAN HUNDIDO.\nGAME OVER");
+                }
+
             }
         }
 
         private void cuandoEventoFinPartida(object sender, Eventos.FinalPartidaArgs e)
         {
-            Console.WriteLine("La partida se ha acabado.");
             this.finPartida = e.fin;
         }
 
         private bool verificarCoordenada(string cadena)
         {
             // Si se introduce 'S' o 's' entonces salir
-            if (cadena.Length == 1 && cadena[0] == 'S' || cadena[0] == 's')
+            if (cadena.Length == 1 && (cadena[0] == 'S' || cadena[0] == 's'))
             {
                 System.Environment.Exit(0);
             }
 
             bool coordenadaValida = true;
 
-            // Si no es un número o una coma no es válido
-            if ((cadena[0] < '0' || cadena[0] > '9') || (cadena[2] < '0' || cadena[2] > '9'))
+            if(cadena.Length != 3)
             {
                 coordenadaValida = false;
             }
-
-            if (cadena[1] != ',')
+            // Si no es un número o una coma no es válido
+            else if ((cadena[0] < '0' || cadena[0] > '9') || (cadena[2] < '0' || cadena[2] > '9'))
+            {
+                coordenadaValida = false;
+            }
+            else if (cadena[1] != ',')
             {
                 coordenadaValida = false;
             }
