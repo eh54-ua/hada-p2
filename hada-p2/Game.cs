@@ -75,7 +75,7 @@ namespace Hada
         private void cuandoEventoFinPartida(object sender, Eventos.FinalPartidaArgs e)
         {
             Console.WriteLine("La partida se ha acabado.");
-            finPartida = e.fin;
+            this.finPartida = e.fin;
         }
 
         private bool verificarCoordenada(string cadena)

@@ -73,6 +73,7 @@ namespace Hada
                         if(coord.Fila == c.Fila && coord.Columna == c.Columna)
                         {
                             b.Disparo(c);
+                            casillasTablero[c] = b.CoordenadasBarco[c];
                         }
                     }
                 }
