@@ -51,6 +51,9 @@ namespace Hada
             string cadena;
             tab.eventoFinPartida += cuandoEventoFinPartida;
 
+            // Mostrar el tablero al principio
+            Console.Write(tab.ToString());
+
             while (!finPartida)
             {
                  // Verificar que se introduce una coordenada en formato válido
@@ -68,7 +71,7 @@ namespace Hada
 
                  // Disparar y mostrar el estado del juego
                  tab.Disparar(new Coordenada(partes[0], partes[1]));
-                Console.Write(tab.ToString());
+                 Console.Write(tab.ToString());
             }
         }
 
@@ -81,24 +84,32 @@ namespace Hada
         private bool verificarCoordenada(string cadena)
         {
             // Si se introduce 'S' o 's' entonces salir
-            if (cadena.Length == 1 && cadena[0] == 'S' || cadena[0] == 's')
+            if (cadena.Length == 1 && (cadena[0] == 'S' || cadena[0] == 's'))
             {
                 System.Environment.Exit(0);
             }
 
             bool coordenadaValida = true;
 
-            // Si no es un número o una coma no es válido
-            if ((cadena[0] < '0' || cadena[0] > '9') || (cadena[2] < '0' || cadena[2] > '9'))
+            // Si no tiene 3 caracteres no es válido
+            if (cadena.Length != 3)
+            {
+                coordenadaValida = false;
+            }
+            
+            // Si las coordenadas no son un número no es válido
+            else if ((cadena[0] < '0' || cadena[0] > '9') || (cadena[2] < '0' || cadena[2] > '9'))
             {
                 coordenadaValida = false;
             }
 
-            if (cadena[1] != ',')
+            // Si el segundo caracter no es una coma no es válido
+            else if (cadena[1] != ',')
             {
                 coordenadaValida = false;
             }
 
+            // Si la coordenada no es válidaa mostrar un mensaje de error
             if (!coordenadaValida)
             {
                 Console.WriteLine("Se ha introducido una coordenada no válida.");
