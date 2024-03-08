@@ -10,7 +10,8 @@ namespace Hada
     {
 
         public Dictionary<Coordenada, String> CoordenadasBarco { get; private set; } = new Dictionary<Coordenada, string>();
-        public Eventos evento { get; private set; }
+        public event EventHandler<Eventos.TocadoArgs> eventoTocado;
+        public event EventHandler<Eventos.HundidoArgs> eventoHundido;
 
         public string Nombre;
         public int NumDanyos;
@@ -23,12 +24,12 @@ namespace Hada
                 //Si la orientacion es horizontal, se aumenta en una unidad la fila.
                 if (orientacion == 'h')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i,coordenadaInicio.Columna);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila,coordenadaInicio.Columna + i);
                     CoordenadasBarco.Add(coord, nombre);
                 }//Si la horientacion es vertical se aumenta en una unidad la columna.
                 else if (orientacion == 'v')
                 {
-                    Coordenada coord = new Coordenada(coordenadaInicio.Fila, coordenadaInicio.Columna + 1);
+                    Coordenada coord = new Coordenada(coordenadaInicio.Fila + i, coordenadaInicio.Columna);
                     CoordenadasBarco.Add(coord, nombre);
                 }
             }
@@ -43,22 +44,31 @@ namespace Hada
             string valor;
 
             //Intento obtener el valor asociado a la cordenada c.
-            if(CoordenadasBarco.TryGetValue(c, out valor))
+            if (CoordenadasBarco.TryGetValue(c, out valor))
             {
                 //Compruebo que el nombre de la casilla no tenga ya el _T.
-                if (!valor.EndsWith("_T"))
+                if (valor.EndsWith("_T") == false)
                 {
                     //Si no lo tiene añado el _T.
                     CoordenadasBarco[c] += "_T";
                     //Aumento en 1 el número de daños.
                     this.NumDanyos++;
                     //Evento tocado
-                }
-            }
+                    if (eventoTocado != null)
+                    {
+                        eventoTocado(this, new Eventos.TocadoArgs(this.Nombre, this.CoordenadasBarco[c], c));
+                    }
 
-            if(this.hundido())
-            {
-                //Evento hundido
+                    if (this.hundido() && eventoHundido != null)
+                    {
+                        eventoHundido(this, new Eventos.HundidoArgs(this.Nombre));
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("Coordenada para disparo repetida.");
+                }
             }
         }
 

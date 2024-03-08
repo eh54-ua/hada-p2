@@ -8,10 +8,6 @@ namespace Hada
 {
     class Eventos
     {
-
-        public event EventHandler<TocadoArgs> eventoTocado;
-        //public event EventHandler<HundidoArgs> eventoHundido;
-
         public class TocadoArgs : EventArgs
         {
             public string nombre { get; set; }
@@ -26,10 +22,23 @@ namespace Hada
             }
         }
 
-        public void manejadorEventoTocado(object sender, TocadoArgs e)
+        public class HundidoArgs : EventArgs
         {
-            Console.WriteLine("Evento tocado");
+            public string nombre;
+
+            public HundidoArgs(string nombre)
+            {
+                this.nombre = nombre;
+            }
         }
 
+        public class FinalPartidaArgs : EventArgs
+        {
+            public bool fin;
+            public FinalPartidaArgs(bool fin)
+            {
+                this.fin = fin;
+            }
+        }
     }
 }
