@@ -110,6 +110,7 @@ namespace Hada
                 coordenadaValida = false;
             }
 
+            // Si la coordenada no es válidaa mostrar un mensaje de error
             if (!coordenadaValida)
             {
                 Console.WriteLine("Se ha introducido una coordenada no válida.");
